@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 extern UART_HandleTypeDef huart1;
-#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE & DISPLAY_TYPE_NO2)
 
 void No2_Service(No2_t* No2_ctx);
 int calculate_checksum(unsigned char* frame_buf, uint8_t length);

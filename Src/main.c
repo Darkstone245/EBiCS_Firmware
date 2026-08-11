@@ -74,7 +74,7 @@
   #include "display_ebics.h"
 #endif
 
-#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE & DISPLAY_TYPE_NO2)
   #include "display_No_2.h"
 #endif
 
@@ -246,7 +246,7 @@ uint8_t ui8_additional_LEV_Page_counter=0;
 uint8_t ui8_LEV_Page_to_send=1;
 #endif
 
-#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE & DISPLAY_TYPE_NO2)
 No2_t No2;
 #endif
 
@@ -296,7 +296,7 @@ void kingmeter_update(void);
 void bafang_update(void);
 #endif
 
-#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE & DISPLAY_TYPE_NO2)
 void No2_update(void);
 #endif
 
@@ -490,7 +490,7 @@ int main(void)
      //  ebics_init();
 #endif
 
-#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE & DISPLAY_TYPE_NO2)
      No2_Init(&No2);
 #endif
 
@@ -650,7 +650,7 @@ int main(void)
 	//  process_ant_page(&MS, &MP);
 #endif
 
-#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE & DISPLAY_TYPE_NO2)
       No2_Service(&No2);
 #endif
 
@@ -814,7 +814,7 @@ int main(void)
 #endif //end RIDEMODE_KCLAMBER_KASSETTE_SENSOR
 #if (RIDEMODE == RIDEMODE_PAS)
 
-#if (DISPLAY_TYPE == DISPLAY_TYPE_KINGMETER_901U || DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE == DISPLAY_TYPE_KINGMETER_901U || (DISPLAY_TYPE & DISPLAY_TYPE_NO2))
 				uint16_mapped_PAS = map(uint32_PAS, RAMP_END, PAS_TIMEOUT, ((PH_CURRENT_MAX*(int32_t)(MS.assist_level)))>>8, 0); // level in range 0...255
 				if(uint32_PAS_counter>PAS_TIMEOUT)int32_temp_current_target=0;
 				else int32_temp_current_target = uint16_mapped_PAS;
@@ -1449,7 +1449,7 @@ static void MX_USART1_UART_Init(void)
 
   huart1.Instance = USART1;
 
-#if ((DISPLAY_TYPE & DISPLAY_TYPE_KINGMETER) ||DISPLAY_TYPE==DISPLAY_TYPE_KUNTENG||DISPLAY_TYPE==DISPLAY_TYPE_EBiCS||DISPLAY_TYPE==DISPLAY_TYPE_NO2)
+#if ((DISPLAY_TYPE & DISPLAY_TYPE_KINGMETER) ||DISPLAY_TYPE==DISPLAY_TYPE_KUNTENG||DISPLAY_TYPE==DISPLAY_TYPE_EBiCS||(DISPLAY_TYPE & DISPLAY_TYPE_NO2))
   huart1.Init.BaudRate = 9600;
 #elif (DISPLAY_TYPE == DISPLAY_TYPE_BAFANG)
   huart1.Init.BaudRate = 1200;
@@ -1955,7 +1955,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle) {
 //       ebics_init();
 #endif
 
-#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE & DISPLAY_TYPE_NO2)
        No2_Init(&No2);
 #endif
        if(UartHandle == &huart2) Hubsensor_Init (&hubdata);
@@ -1963,7 +1963,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle) {
 
 
 
-#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE & DISPLAY_TYPE_NO2)
 void No2_update(void)
 {
 	/* Prepare Tx parameters */
