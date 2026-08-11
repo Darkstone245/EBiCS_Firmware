@@ -74,6 +74,10 @@
   #include "display_ebics.h"
 #endif
 
+#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+  #include "display_No_2.h"
+#endif
+
 
 #include <arm_math.h>
 /* USER CODE END Includes */
@@ -242,6 +246,10 @@ uint8_t ui8_additional_LEV_Page_counter=0;
 uint8_t ui8_LEV_Page_to_send=1;
 #endif
 
+#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+No2_t No2;
+#endif
+
 
 
 MotorState_t MS;
@@ -286,6 +294,10 @@ void kingmeter_update(void);
 
 #if (DISPLAY_TYPE == DISPLAY_TYPE_BAFANG)
 void bafang_update(void);
+#endif
+
+#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+void No2_update(void);
 #endif
 
 static void dyn_adc_state(q31_t angle);
@@ -478,6 +490,10 @@ int main(void)
      //  ebics_init();
 #endif
 
+#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+     No2_Init(&No2);
+#endif
+
 
     TIM1->CCR1 = 1023; //set initial PWM values
     TIM1->CCR2 = 1023;
@@ -632,6 +648,10 @@ int main(void)
 
 #if (DISPLAY_TYPE & DISPLAY_TYPE_EBiCS)
 	//  process_ant_page(&MS, &MP);
+#endif
+
+#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+      No2_Service(&No2);
 #endif
 
 	  ui8_UART1_flag=0;
@@ -794,7 +814,7 @@ int main(void)
 #endif //end RIDEMODE_KCLAMBER_KASSETTE_SENSOR
 #if (RIDEMODE == RIDEMODE_PAS)
 
-#if (DISPLAY_TYPE == DISPLAY_TYPE_KINGMETER_901U)
+#if (DISPLAY_TYPE == DISPLAY_TYPE_KINGMETER_901U || DISPLAY_TYPE == DISPLAY_TYPE_NO2)
 				uint16_mapped_PAS = map(uint32_PAS, RAMP_END, PAS_TIMEOUT, ((PH_CURRENT_MAX*(int32_t)(MS.assist_level)))>>8, 0); // level in range 0...255
 				if(uint32_PAS_counter>PAS_TIMEOUT)int32_temp_current_target=0;
 				else int32_temp_current_target = uint16_mapped_PAS;
@@ -1429,7 +1449,7 @@ static void MX_USART1_UART_Init(void)
 
   huart1.Instance = USART1;
 
-#if ((DISPLAY_TYPE & DISPLAY_TYPE_KINGMETER) ||DISPLAY_TYPE==DISPLAY_TYPE_KUNTENG||DISPLAY_TYPE==DISPLAY_TYPE_EBiCS)
+#if ((DISPLAY_TYPE & DISPLAY_TYPE_KINGMETER) ||DISPLAY_TYPE==DISPLAY_TYPE_KUNTENG||DISPLAY_TYPE==DISPLAY_TYPE_EBiCS||DISPLAY_TYPE==DISPLAY_TYPE_NO2)
   huart1.Init.BaudRate = 9600;
 #elif (DISPLAY_TYPE == DISPLAY_TYPE_BAFANG)
   huart1.Init.BaudRate = 1200;
@@ -1934,10 +1954,63 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle) {
 #if (DISPLAY_TYPE == DISPLAY_TYPE_EBiCS)
 //       ebics_init();
 #endif
+
+#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+       No2_Init(&No2);
+#endif
        if(UartHandle == &huart2) Hubsensor_Init (&hubdata);
 }
 
 
+
+#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
+void No2_update(void)
+{
+	/* Prepare Tx parameters */
+
+#if (SPEEDSOURCE  == EXTERNAL)
+	No2.Tx.Wheeltime_ms = ((MS.Speed>>3)*PULSES_PER_REVOLUTION); //>>3 because of 8 kHz counter frequency, so 8 tics per ms
+#else
+	if(__HAL_TIM_GET_COUNTER(&htim2) < 12000)
+	{
+		No2.Tx.Wheeltime_ms = (MS.Speed*GEAR_RATIO*6)>>9; //>>9 because of 500kHZ timer2 frequency, 512 tics per ms should be OK *6 because of 6 hall interrupts per electric revolution.
+	}
+	else
+	{
+		No2.Tx.Wheeltime_ms = 64000;
+	}
+
+#endif
+	if(MS.Temperature>130) No2.Tx.Error = 7;
+	else No2.Tx.Error = 0;
+
+	No2.Tx.Current_x10 = (uint16_t) (MS.Battery_Current/100); //MS.Battery_Current is in mA
+	No2.Tx.BrakeActive=brake_flag;
+
+	/* Apply Rx parameters */
+	MS.assist_level = No2.Rx.AssistLevel;
+
+	if(!No2.Rx.Headlight)
+	{
+		HAL_GPIO_WritePin(LIGHT_GPIO_Port, LIGHT_Pin, GPIO_PIN_RESET);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(LIGHT_GPIO_Port, LIGHT_Pin, GPIO_PIN_SET);
+	}
+
+	if(No2.Rx.PushAssist)
+	{
+		ui8_Push_Assist_flag=1;
+	}
+	else
+	{
+		ui8_Push_Assist_flag=0;
+	}
+
+}
+
+#endif
 
 #if (DISPLAY_TYPE & DISPLAY_TYPE_KINGMETER || DISPLAY_TYPE & DISPLAY_TYPE_DEBUG)
 void kingmeter_update(void)

@@ -9,6 +9,7 @@ C_SRCS += \
 ../Src/display_ebics.c \
 ../Src/display_kingmeter.c \
 ../Src/display_kunteng.c \
+../Src/display_No_2.c \
 ../Src/hubsensor.c \
 ../Src/eeprom.c \
 ../Src/main.c \
@@ -23,6 +24,7 @@ OBJS += \
 ./Src/display_ebics.o \
 ./Src/display_kingmeter.o \
 ./Src/display_kunteng.o \
+./Src/display_No_2.o \
 ./Src/hubsensor.o \
 ./Src/eeprom.o \
 ./Src/main.o \
@@ -37,6 +39,7 @@ C_DEPS += \
 ./Src/display_ebics.d \
 ./Src/display_kingmeter.d \
 ./Src/display_kunteng.d \
+./Src/display_No_2.d \
 ./Src/hubsensor.d \
 ./Src/eeprom.d \
 ./Src/main.d \
@@ -60,5 +63,4 @@ Src/%.o: ../Src/%.c
 	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -mfloat-abi=soft '-D__weak=__attribute__((weak))' -DARM_MATH_CM3 '-D__packed=__attribute__((__packed__))' -DUSE_HAL_DRIVER -DSTM32F103x6 -I $(INC_PATH) -I $(DRIVERS_PATH) -I $(LEGACY_PATH) -I $(DEVICE_PATH) -I $(CMSIS_PATH) -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
-
 
