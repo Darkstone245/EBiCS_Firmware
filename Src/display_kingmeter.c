@@ -170,7 +170,7 @@ void KingMeter_Init (KINGMETER_t* KM_ctx)
     KM_ctx->Settings.SPS_SpdMagnets         = (uint8_t) wheel_magnets;
     KM_ctx->Settings.VOL_1_UnderVolt_x10    = (uint16_t) (vcutoff * 10);
     KM_ctx->Settings.WheelSize_mm           = (uint16_t) (WHEEL_CIRCUMFERENCE * 1000);
-    KM_ctx->Settings.Reverse   	 		 	= 1; //workaround for reverse operation
+    KM_ctx->Settings.Reverse   	 		 	= 0; //workaround for reverse operation
 
     // Parameters received from display in operation mode:
 
