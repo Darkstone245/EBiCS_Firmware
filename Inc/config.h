@@ -101,10 +101,10 @@
 
 //----------------------------- Display setting
 
-#define DISPLAY_TYPE DISPLAY_TYPE_DEBUG
+#define DISPLAY_TYPE DISPLAY_TYPE_KINGMETER_618U
 
 //------------------------------Autodetect setting
-#define AUTODETECT 1
+#define AUTODETECT 0
 
 
 
