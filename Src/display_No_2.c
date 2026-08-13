@@ -25,16 +25,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "display_No_2.h"
 #include "stm32f1xx_hal.h"
 #include "print.h"
-#include <string.h>
 
 
 
 extern UART_HandleTypeDef huart1;
-#if (DISPLAY_TYPE & DISPLAY_TYPE_NO2)
+#if (DISPLAY_TYPE == DISPLAY_TYPE_NO2)
 
 void No2_Service(No2_t* No2_ctx);
 int calculate_checksum(unsigned char* frame_buf, uint8_t length);
-void No2_update(void);
 
 static uint8_t  lowByte(uint16_t word);
 static uint8_t  highByte(uint16_t word);
