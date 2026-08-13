@@ -259,7 +259,7 @@ static void KM_618U_Service(KINGMETER_t* KM_ctx)
 
         // Prepare Tx message
         TxBuffer[0] = 0X46;                                               // StartCode
-		KM_Ctx->TX.Wheeltime_ms=317;
+		KM_ctx->TX.Wheeltime_ms=317;
         if(KM_ctx->Tx.Battery == KM_BATTERY_LOW)
         {
             TxBuffer[1] = 0x00;                                           // If none of Bit[0..2] is set, display blinks
